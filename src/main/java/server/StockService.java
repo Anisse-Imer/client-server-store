@@ -10,7 +10,7 @@ import java.util.List;
 public class StockService implements IStockService {
     @Override
     public Product getProductById(int id) throws RemoteException {
-        return null;
+        return new Product(0, 0, "", 4.54, 0);
     }
 
     @Override
