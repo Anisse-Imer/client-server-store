@@ -1,16 +1,25 @@
 package server;
 
+import common.dao.ProductDAO;
 import common.tables.*;
 import common.IStockService;
 
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
-// implémenter l'interface créée à l'étape 1
-public class StockService implements IStockService {
+// Étendre UnicastRemoteObject pour en faire un objet distant
+public class StockService extends UnicastRemoteObject implements IStockService {
+
+    // Constructeur requis pour UnicastRemoteObject
+    protected StockService() throws RemoteException {
+        super(); // Exportation automatique de l'objet
+    }
+
     @Override
     public Product getProductById(int id) throws RemoteException {
-        return new Product(0, 0, "", 4.54, 0);
+        ProductDAO dao = new ProductDAO();
+        return dao.getProductById(id);
     }
 
     @Override

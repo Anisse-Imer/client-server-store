@@ -1,16 +1,23 @@
 package server;
 
-import server.StockService;
+import common.IStockService;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class ServerMain {
     public static void main(String[] args) {
         try {
-            StockService service = new StockService();
+            // Création de l'objet distant
+            IStockService service = new StockService();
+
+            // Création du registre RMI (si ce n’est pas déjà fait)
             Registry registry = LocateRegistry.createRegistry(1099);
-            registry.bind("StockService", service);
-            System.out.println("Server is running...");
+
+            // Enregistrement du service sous le nom "StockService"
+            registry.rebind("StockService", service);
+
+            System.out.println("Serveur RMI démarré...");
         } catch (Exception e) {
             e.printStackTrace();
         }
