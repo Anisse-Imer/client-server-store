@@ -1,5 +1,6 @@
 package server;
 
+import common.dao.FamilyDAO;
 import common.dao.InvoiceDAO;
 import common.dao.ProductDAO;
 import common.tables.*;
@@ -10,12 +11,26 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import server.DbManager;
+
 // Étendre UnicastRemoteObject pour en faire un objet distant
 public class StockService extends UnicastRemoteObject implements IStockService {
 
     // Constructeur requis pour UnicastRemoteObject
     protected StockService() throws RemoteException {
         super(); // Exportation automatique de l'objet
+    }
+
+    @Override
+    public boolean createProduct(Product product) throws RemoteException {
+        ProductDAO dao = new ProductDAO();
+        return dao.addProduct(product);
+    }
+
+    @Override
+    public boolean createFamily(Family family) throws RemoteException {
+        FamilyDAO dao = new FamilyDAO();
+        return dao.addFamily(family);
     }
 
     @Override

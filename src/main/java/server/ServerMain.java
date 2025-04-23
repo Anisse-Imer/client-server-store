@@ -5,6 +5,8 @@ import common.IStockService;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import server.DbManager;
+
 public class ServerMain {
     public static void main(String[] args) {
         try {
@@ -16,6 +18,9 @@ public class ServerMain {
 
             // Enregistrement du service sous le nom "StockService"
             registry.rebind("StockService", service);
+
+            // Init database components\
+            DbManager.init();
 
             System.out.println("Serveur RMI démarré...");
         } catch (Exception e) {

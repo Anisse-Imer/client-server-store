@@ -8,6 +8,8 @@ import java.util.List;
 
 // Remote Interface defining available methods
 public interface IStockService extends Remote {
+    boolean createProduct(Product product) throws RemoteException;
+    boolean createFamily(Family family) throws RemoteException;
     // Consultation du stock d’un article
     Product getProductById(int id) throws RemoteException;
 

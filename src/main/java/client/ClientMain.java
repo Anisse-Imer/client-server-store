@@ -1,26 +1,17 @@
 package client;
 
+import client.ui.StockClientUI;
 import common.IStockService;
 import common.tables.Product;
 
+import javax.swing.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 public class ClientMain {
     public static void main(String[] args) {
-        try {
-            // Connexion au registre RMI
-            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-
-            // Recherche du service
-            IStockService service = (IStockService) registry.lookup("StockService");
-
-            // Appel d'une méthode distante
-            Product product = service.getProductById(1);
-            System.out.println("Produit récupéré : " + product);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        SwingUtilities.invokeLater(() -> {
+            new StockClientUI().setVisible(true);
+        });
     }
 }
