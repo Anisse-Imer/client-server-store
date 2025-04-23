@@ -95,6 +95,22 @@ public class ProductDAO {
             return false;
         }
     }
+    public boolean updateProductQuantity(int id, int newQuantity) {
+        String sql = "UPDATE product SET price = ? WHERE id = ?";
+        try (Connection conn = DbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setDouble(1, newQuantity);
+            stmt.setInt(2, id);
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0; // Retourne vrai si la mise à jour a réussi
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     public boolean deleteProduct(int id) {
         String sql = "DELETE FROM product WHERE id = ?";
@@ -111,4 +127,5 @@ public class ProductDAO {
             return false;
         }
     }
+
 }
