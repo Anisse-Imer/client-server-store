@@ -13,7 +13,7 @@ import java.util.List;
 public class ProductDAO {
 
     public boolean addProduct(Product product) {
-        String sql = "INSERT INTO product (id_family, name, price, quantite) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO product (id_family, name, price, quantity) VALUES (?, ?, ?, ?)";
         try (Connection conn = DbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -22,8 +22,9 @@ public class ProductDAO {
             stmt.setDouble(3, product.getPrice());
             stmt.setInt(4, product.getQuantity());
 
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0; // Retourne vrai si l'ajout a réussi
+            ResultSet rowsAffected = stmt.executeQuery();
+            System.out.println("Success" + rowsAffected.first());
+            return rowsAffected.first(); // Retourne vrai si l'ajout a réussi
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -45,7 +46,7 @@ public class ProductDAO {
                         rs.getInt("id_family"),
                         rs.getString("name"),
                         rs.getDouble("price"),
-                        rs.getInt("quantite")
+                        rs.getInt("quantity")
                 );
             }
 
@@ -69,7 +70,7 @@ public class ProductDAO {
                         rs.getInt("id_family"),
                         rs.getString("name"),
                         rs.getDouble("price"),
-                        rs.getInt("quantite")
+                        rs.getInt("quantity")
                 ));
             }
 
