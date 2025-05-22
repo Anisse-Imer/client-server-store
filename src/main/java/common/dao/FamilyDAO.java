@@ -37,7 +37,6 @@ public class FamilyDAO {
             return false;
         }
     }
-
     public Family getFamilyById(int id) {
         String sql = "SELECT * FROM family WHERE id = ?";
         try (Connection conn = DbManager.getConnection();

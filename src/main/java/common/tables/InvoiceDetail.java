@@ -8,6 +8,8 @@ public class InvoiceDetail implements Serializable {
     private int id_invoice;
     private float price;
 
+    private int quantity;
+
     public int getId() {
         return id;
     }

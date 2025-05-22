@@ -1,17 +1,17 @@
 package common.tables;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class Invoice implements Serializable {
     private int id;
     private float price;
     private String payment_method;
-    private Date date;
+    private LocalDateTime  date;
     private boolean paid;
 
-    public Invoice(int id, float price, String payment_method, Date date, boolean paid) {
-        this.id = id;
+    public Invoice( float price, String payment_method, LocalDateTime  date, boolean paid) {
         this.price = price;
         this.payment_method = payment_method;
         this.date = date;
@@ -42,11 +42,11 @@ public class Invoice implements Serializable {
         this.payment_method = payment_method;
     }
 
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime  date) {
         this.date = date;
     }
 
@@ -67,5 +67,8 @@ public class Invoice implements Serializable {
                 ", date=" + date +
                 ", paid=" + paid +
                 '}';
+    }
+
+    public void setTotalAmount(double totalAmount) {
     }
 }

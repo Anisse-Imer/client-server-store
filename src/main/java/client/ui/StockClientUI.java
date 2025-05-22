@@ -4,6 +4,8 @@ import common.IStockService;
 import common.tables.Family;
 import common.tables.Invoice;
 import common.tables.Product;
+import org.w3c.dom.ls.LSOutput;
+import server.StockService;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -60,6 +62,13 @@ public class StockClientUI extends JFrame {
     private JTextField revenueDateField;
     private JLabel revenueResultLabel;
     private JButton saveInvoicesButton;
+    private JPanel orderPanel;
+    private JTable orderTable;
+    private DefaultTableModel orderTableModel;
+    private JTextField orderProductIdField;
+    private JTextField orderQuantityField;
+    private JTextArea orderSummaryArea;
+
 
     public StockClientUI() {
         initializeUI();
@@ -90,12 +99,15 @@ public class StockClientUI extends JFrame {
         createReportsPanel();
         createNewProductPanel();
         createNewFamilyPanel(); // Create the new family panel
+        createOrderPanel();
 
         tabbedPane.addTab("Products", productsPanel);
         tabbedPane.addTab("Create Product", createProductPanel);
         tabbedPane.addTab("Create Family", createFamilyPanel); // Add the new family tab
         tabbedPane.addTab("Invoices", invoicesPanel);
         tabbedPane.addTab("Reports", reportsPanel);
+        tabbedPane.addTab("Orders", orderPanel);
+
 
         add(tabbedPane);
     }
@@ -767,6 +779,169 @@ public class StockClientUI extends JFrame {
 
         invoiceDetailsArea.setText(sb.toString());
     }
+    private void createOrderPanel() {
+        orderPanel = new JPanel(new BorderLayout(10, 10));
+        orderPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        // --- Top Input Section ---
+        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        inputPanel.setBorder(BorderFactory.createTitledBorder("Add Product to Order"));
+
+        inputPanel.add(new JLabel("Product ID:"));
+        orderProductIdField = new JTextField(5);
+        inputPanel.add(orderProductIdField);
+
+        inputPanel.add(new JLabel("Quantity:"));
+        orderQuantityField = new JTextField(5);
+        inputPanel.add(orderQuantityField);
+
+        JButton addToOrderButton = new JButton("Add to Order");
+        addToOrderButton.addActionListener(e -> addProductToOrder());
+        inputPanel.add(addToOrderButton);
+
+        orderPanel.add(inputPanel, BorderLayout.NORTH);
+
+        // --- Center Table ---
+        orderTableModel = new DefaultTableModel(new Object[]{"Product ID", "Name", "Quantity", "Unit Price", "Total"}, 0);
+        orderTable = new JTable(orderTableModel);
+        JScrollPane tableScroll = new JScrollPane(orderTable);
+        tableScroll.setBorder(BorderFactory.createTitledBorder("Current Order"));
+        orderPanel.add(tableScroll, BorderLayout.CENTER);
+
+        // --- Bottom Summary + Buttons ---
+        JPanel bottomPanel = new JPanel(new BorderLayout(10, 10));
+
+        // Summary
+        orderSummaryArea = new JTextArea(5, 30);
+        orderSummaryArea.setEditable(false);
+        JScrollPane summaryScroll = new JScrollPane(orderSummaryArea);
+        summaryScroll.setBorder(BorderFactory.createTitledBorder("Order Summary"));
+        bottomPanel.add(summaryScroll, BorderLayout.CENTER);
+
+        // Action buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton confirmOrderButton = new JButton("Confirm Order");
+        confirmOrderButton.addActionListener(e -> confirmOrder());
+        buttonPanel.add(confirmOrderButton);
+
+        JButton clearOrderButton = new JButton("Clear Order");
+        clearOrderButton.addActionListener(e -> clearOrder());
+        buttonPanel.add(clearOrderButton);
+
+        bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
+        orderPanel.add(bottomPanel, BorderLayout.SOUTH);
+    }
+    private void addProductToOrder() {
+        try {
+            int productId = Integer.parseInt(orderProductIdField.getText().trim());
+            int quantity = Integer.parseInt(orderQuantityField.getText().trim());
+
+            if (quantity <= 0) {
+                JOptionPane.showMessageDialog(this, "Quantity must be greater than 0!",
+                        "Input Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            Product product = stockService.getProductById(productId);
+            if (product == null) {
+                JOptionPane.showMessageDialog(this, "Product not found!",
+                        "Product Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            double total = product.getPrice() * quantity;
+            orderTableModel.addRow(new Object[]{
+                    product.getId(),
+                    product.getName(),
+                    quantity,
+                    product.getPrice(),
+                    total
+            });
+
+            updateOrderSummary();
+            orderProductIdField.setText("");
+            orderQuantityField.setText("");
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid product ID or quantity!",
+                    "Input Error", JOptionPane.ERROR_MESSAGE);
+        } catch (RemoteException e) {
+            JOptionPane.showMessageDialog(this, "Remote error: " + e.getMessage(),
+                    "Remote Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void updateOrderSummary() {
+        int rowCount = orderTableModel.getRowCount();
+        double grandTotal = 0;
+
+        for (int i = 0; i < rowCount; i++) {
+            grandTotal += (double) orderTableModel.getValueAt(i, 4);
+        }
+
+        orderSummaryArea.setText("Items in Order: " + rowCount + "\n");
+        orderSummaryArea.append("Total Amount: €" + String.format("%.2f", grandTotal));
+    }
+
+    private void confirmOrder() {
+        int rowCount = orderTableModel.getRowCount();
+        if (rowCount == 0) {
+            JOptionPane.showMessageDialog(this, "No items in the order!",
+                    "Order Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean allSuccessful = true;
+
+        for (int i = 0; i < rowCount; i++) {
+            int productId = (int) orderTableModel.getValueAt(i, 0);
+            int quantity = (int) orderTableModel.getValueAt(i, 2);
+
+            try {
+                boolean success = stockService.purchaseProduct(productId, quantity);
+                if (!success) allSuccessful = false;
+            } catch (RemoteException e) {
+                JOptionPane.showMessageDialog(this, "Error confirming item: " + productId,
+                        "Remote Error", JOptionPane.ERROR_MESSAGE);
+                allSuccessful = false;
+            }
+        }
+
+        if (allSuccessful) {
+            JOptionPane.showMessageDialog(this, "Order confirmed successfully!");
+            clearOrder();
+        } else {
+            JOptionPane.showMessageDialog(this, "Some items could not be ordered!",
+                    "Partial Success", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    public void saveOrder() throws RemoteException {
+          String totalAmountString = orderSummaryArea.getText();
+          float totalAmount = getAmountFromorderSummaryArea(totalAmountString);
+          boolean save = stockService.saveInvoice(totalAmount);
+    }
+
+    private float getAmountFromorderSummaryArea( String text){
+        String[] lines = orderSummaryArea.getText().split("\n");
+        float totalAmount = 0;
+
+        for (String line : lines) {
+            if (line.startsWith("Total Amount:")) {
+                String amountStr = line.replace("Total Amount: €", "").trim();
+                amountStr = amountStr.replace(",", ".");
+                totalAmount = Float.parseFloat(amountStr);
+                break;
+            }
+        }
+          return totalAmount;
+    }
+
+    private void clearOrder() {
+        orderTableModel.setRowCount(0);
+        orderSummaryArea.setText("");
+    }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

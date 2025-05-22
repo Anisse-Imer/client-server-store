@@ -32,6 +32,28 @@ public class ProductDAO {
         }
     }
 
+    public boolean updateProduct(Product product) {
+        double price = product.getPrice();
+        int id = product.getId();
+        String sql = "UPDATE product SET price = ? WHERE id = ?";
+        try (Connection conn = DbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, product.getId_family());
+            stmt.setString(2, product.getName());
+            stmt.setDouble(3, product.getPrice());
+            stmt.setInt(4, product.getQuantity());
+
+            ResultSet rowsAffected = stmt.executeQuery();
+            System.out.println("Success" + rowsAffected.first());
+            return rowsAffected.first(); // Retourne vrai si l'ajout a réussi
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public Product getProductById(int id) {
         String sql = "SELECT * FROM product WHERE id = ?";
         try (Connection conn = DbManager.getConnection();
@@ -97,7 +119,7 @@ public class ProductDAO {
         }
     }
     public boolean updateProductQuantity(int id, int newQuantity) {
-        String sql = "UPDATE product SET price = ? WHERE id = ?";
+        String sql = "UPDATE product SET quantity = ? WHERE id = ?";
         try (Connection conn = DbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
