@@ -2,23 +2,18 @@ package server;
 
 import common.dao.FamilyDAO;
 import common.dao.InvoiceDAO;
+import common.dao.InvoiceDetailDAO;
 import common.dao.ProductDAO;
 import common.tables.*;
 import common.IStockService;
-import javafx.util.converter.LocalDateStringConverter;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -249,12 +244,25 @@ public class StockService extends UnicastRemoteObject implements IStockService {
     }
 
     @Override
-    public boolean saveInvoice(float totalAmount) throws RemoteException {
+    public Long saveInvoice(float totalAmount) throws RemoteException {
         String payment_method = "Card";
         boolean paid = true;
         InvoiceDAO dao = new InvoiceDAO();
         Invoice invoice = new Invoice(totalAmount,payment_method,LocalDateTime.now(),paid);
         return  dao.addInvoice(invoice);
+
+    }
+
+    @Override
+    public Long saveInvoiceDetails(int productId, Long invoiceId, float price, int quantity) throws RemoteException {
+    try {
+        //        Invoice
+        InvoiceDetail invoiceDetail = new InvoiceDetail(productId, invoiceId, price, quantity);
+        InvoiceDetailDAO dao = new InvoiceDetailDAO();
+        return dao.addInvoiceDetail(invoiceDetail);
+    } catch (SQLException e) {
+        throw new RuntimeException(e);
+    }
 
     }
 

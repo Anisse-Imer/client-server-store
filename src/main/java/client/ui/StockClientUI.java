@@ -1,8 +1,11 @@
 package client.ui;
 
 import common.IStockService;
+import common.dao.InvoiceDAO;
+import common.dao.InvoiceDetailDAO;
 import common.tables.Family;
 import common.tables.Invoice;
+import common.tables.InvoiceDetail;
 import common.tables.Product;
 import org.w3c.dom.ls.LSOutput;
 import server.StockService;
@@ -15,8 +18,10 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -821,7 +826,15 @@ public class StockClientUI extends JFrame {
         // Action buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton confirmOrderButton = new JButton("Confirm Order");
-        confirmOrderButton.addActionListener(e -> confirmOrder());
+        confirmOrderButton.addActionListener(e -> {
+            try {
+                confirmOrder();
+            } catch (RemoteException ex) {
+                throw new RuntimeException(ex);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         buttonPanel.add(confirmOrderButton);
 
         JButton clearOrderButton = new JButton("Clear Order");
@@ -883,7 +896,7 @@ public class StockClientUI extends JFrame {
         orderSummaryArea.append("Total Amount: €" + String.format("%.2f", grandTotal));
     }
 
-    private void confirmOrder() {
+    private void confirmOrder() throws RemoteException, SQLException {
         int rowCount = orderTableModel.getRowCount();
         if (rowCount == 0) {
             JOptionPane.showMessageDialog(this, "No items in the order!",
@@ -908,6 +921,10 @@ public class StockClientUI extends JFrame {
         }
 
         if (allSuccessful) {
+            Long invoiceId = saveOrder();
+            System.out.println("Invoice ID: " + invoiceId);
+            //func param invoiceId
+            saveOrderDetail(invoiceId);
             JOptionPane.showMessageDialog(this, "Order confirmed successfully!");
             clearOrder();
         } else {
@@ -916,11 +933,46 @@ public class StockClientUI extends JFrame {
         }
     }
 
-    public void saveOrder() throws RemoteException {
+    public Long saveOrder() throws RemoteException {
           String totalAmountString = orderSummaryArea.getText();
           float totalAmount = getAmountFromorderSummaryArea(totalAmountString);
-          boolean save = stockService.saveInvoice(totalAmount);
+        return stockService.saveInvoice(totalAmount);
     }
+
+    public Long saveOrderDetail(Long invoiceId) throws RemoteException, SQLException {
+        InvoiceDetailDAO dao = new InvoiceDetailDAO();
+        List<String[]> rows = getAllOrderLines();
+
+        for (String[] row : rows) {
+            System.out.println("Ligne insérée: " + "Invoice id: " + invoiceId + "Produit: " + row[0] + ", Prix: " + row[3] + ", Quantité: " + row[2]);
+            // Exemple : afficher les colonnes
+            InvoiceDetail invoiceDetail = new InvoiceDetail(Integer.parseInt(row[0]), invoiceId, Float.parseFloat(row[3]), Integer.parseInt(row[2]));
+            System.out.println("Blabla" + invoiceId);
+            dao.addInvoiceDetail(invoiceDetail);
+            // Tu peux ici convertir ces valeurs et les stocker via DAO
+        }
+
+        return invoiceId;
+    }
+
+
+    public List<String[]> getAllOrderLines() {
+        List<String[]> rows = new ArrayList<>();
+        int rowCount = orderTableModel.getRowCount();
+        int columnCount = orderTableModel.getColumnCount();
+
+        for (int i = 0; i < rowCount; i++) {
+            String[] row = new String[columnCount];
+            for (int j = 0; j < columnCount; j++) {
+                Object value = orderTableModel.getValueAt(i, j);
+                row[j] = value != null ? value.toString() : "";
+            }
+            rows.add(row);
+        }
+
+        return rows;
+    }
+
 
     private float getAmountFromorderSummaryArea( String text){
         String[] lines = orderSummaryArea.getText().split("\n");

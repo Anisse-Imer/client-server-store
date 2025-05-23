@@ -44,5 +44,7 @@ public interface IStockService extends Remote {
     boolean saveInvoicesToServer() throws RemoteException;
 
     // Sauvegarde des factures
-    boolean saveInvoice(float totalAmount) throws RemoteException;
+    Long saveInvoice(float totalAmount) throws RemoteException;
+
+    Long saveInvoiceDetails(int productId, Long invoiceId, float price, int quantity) throws RemoteException;
 }

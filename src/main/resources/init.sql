@@ -30,11 +30,12 @@ CREATE TABLE invoice (
 );
 
 -- Create invoice_product table
-CREATE TABLE invoice_product (
+CREATE TABLE invoice_detail (
     id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT NOT NULL,
     id_invoice INT NOT NULL,
     price FLOAT NOT NULL,
+    quantity INT NOT NULL,
     FOREIGN KEY (product_id) REFERENCES product(id),
     FOREIGN KEY (id_invoice) REFERENCES invoice(id)
 );
