@@ -22,10 +22,6 @@ public class InvoiceDetailDAO {
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                ResultSet rs = stmt.getGeneratedKeys();
-                if (rs.next()) {
-                    detail.setId(rs.getInt(1)); // Si l'ID est auto-généré
-                }
                 return Long.getLong(String.valueOf(detail.getId()));
             }
         }

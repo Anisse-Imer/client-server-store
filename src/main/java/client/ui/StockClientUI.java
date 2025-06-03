@@ -945,11 +945,9 @@ public class StockClientUI extends JFrame {
 
         for (String[] row : rows) {
             System.out.println("Ligne insérée: " + "Invoice id: " + invoiceId + "Produit: " + row[0] + ", Prix: " + row[3] + ", Quantité: " + row[2]);
-            // Exemple : afficher les colonnes
             InvoiceDetail invoiceDetail = new InvoiceDetail(Integer.parseInt(row[0]), invoiceId, Float.parseFloat(row[3]), Integer.parseInt(row[2]));
-            System.out.println("Blabla" + invoiceId);
             dao.addInvoiceDetail(invoiceDetail);
-            // Tu peux ici convertir ces valeurs et les stocker via DAO
+
         }
 
         return invoiceId;
