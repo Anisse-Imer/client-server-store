@@ -3,7 +3,6 @@ package server.main;
 import common.IShopService;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import server.main.DbManager;
 
 public class ServerShopManager {
     public static void main(String[] args) {
@@ -18,7 +17,7 @@ public class ServerShopManager {
             registry.rebind("ShopService", service);
 
             // Init database components\
-            DbManager.init();
+            server.main.CDbManager.init();
 
             System.out.println("Serveur RMI-ServerShopManager démarré...");
         } catch (Exception e) {
