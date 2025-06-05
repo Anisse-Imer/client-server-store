@@ -1,4 +1,4 @@
 package common.dao.mainshop;
 
-public class ProductDAO {
+public class CProductDAO {
 }
