@@ -66,7 +66,7 @@ public class InvoiceDAO {
                         dateTime,
                         rs.getBoolean("paid")
                 );
-                invoice.setId(rs.getInt("id")); // Ajout de l'ID
+                invoice.setId(rs.getInt("id"));
                 return invoice;
             }
 
@@ -179,4 +179,25 @@ public class InvoiceDAO {
             return false;
         }
     }
+
+    public double calculateRevenue(Date date) {
+        String sql = "SELECT SUM(price) FROM invoice WHERE date = ?";
+        double revenue = 0;
+
+        try (Connection conn = DbManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setDate(1, date);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                revenue = rs.getDouble(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return revenue;
+    }
+
 }
