@@ -14,10 +14,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 // Étendre UnicastRemoteObject pour en faire un objet distant
@@ -207,8 +204,20 @@ public class StockService extends UnicastRemoteObject implements IStockService {
 
     @Override
     public double calculateRevenue(String date) throws RemoteException {
-        return 0;
+        InvoiceDAO dao = new InvoiceDAO();
+        try {
+            // Convertit la chaîne en java.sql.Date (format attendu : "yyyy-MM-dd")
+            System.out.println("date dans service : " + date);
+            Date sqlDate = java.sql.Date.valueOf(date);
+            System.out.println("date dans service : " + sqlDate);
+            return dao.calculateRevenue((java.sql.Date) sqlDate);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
+
+
 
     @Override
     public boolean addStock(int productId, int quantity) throws RemoteException {

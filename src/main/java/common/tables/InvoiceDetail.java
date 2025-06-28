@@ -7,7 +7,6 @@ public class InvoiceDetail implements Serializable {
     private int id_product;
     private Long id_invoice;
     private float price;
-
     private int quantity;
 
     public InvoiceDetail() {

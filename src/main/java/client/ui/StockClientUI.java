@@ -21,6 +21,7 @@ import java.rmi.registry.Registry;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -672,10 +673,11 @@ public class StockClientUI extends JFrame {
         try {
             int invoiceId = Integer.parseInt(invoiceIdField.getText().trim());
             Invoice invoice = stockService.getInvoiceById(invoiceId);
+            System.out.println("invoice : " + invoice.getDate());
 
             if (invoice != null) {
                 displayInvoice(invoice);
-                JOptionPane.showMessageDialog(this, "Invoice found!");
+                JOptionPane.showMessageDialog(this, "Found!");
             } else {
                 invoiceDetailsArea.setText("Invoice not found!");
                 JOptionPane.showMessageDialog(this, "Invoice not found!",
@@ -729,8 +731,9 @@ public class StockClientUI extends JFrame {
                         "Input Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
+            System.out.println("date : " + dateStr);
             double revenue = stockService.calculateRevenue(dateStr);
+            System.out.println("recette : " + revenue);
             revenueResultLabel.setText(String.format("€%.2f", revenue));
 
         } catch (RemoteException e) {
@@ -773,17 +776,19 @@ public class StockClientUI extends JFrame {
     }
 
     private void displayInvoice(Invoice invoice) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
         StringBuilder sb = new StringBuilder();
         sb.append("Invoice Details:\n\n");
         sb.append("Invoice ID: ").append(invoice.getId()).append("\n");
-        sb.append("Date: ").append(sdf.format(invoice.getDate())).append("\n");
+        sb.append("Date: ").append(invoice.getDate().format(dtf)).append("\n");
         sb.append("Total Amount: €").append(String.format("%.2f", invoice.getPrice())).append("\n");
         sb.append("Payment Method: ").append(invoice.getPayment_method()).append("\n");
         sb.append("Status: ").append(invoice.isPaid() ? "Paid" : "Unpaid").append("\n");
 
         invoiceDetailsArea.setText(sb.toString());
     }
+
     private void createOrderPanel() {
         orderPanel = new JPanel(new BorderLayout(10, 10));
         orderPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
