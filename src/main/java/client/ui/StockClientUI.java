@@ -33,9 +33,9 @@ public class StockClientUI extends JFrame {
     private JPanel invoicesPanel;
     private JPanel reportsPanel;
     private JPanel createProductPanel;
-    private JPanel createFamilyPanel; // New panel for creating families
+    private JPanel createFamilyPanel;
 
-    // Products tab components
+    // Components de l'onglet Produits
     private JTextField productIdField;
     private JTextField familyIdField;
     private JTable productsTable;
@@ -47,24 +47,24 @@ public class StockClientUI extends JFrame {
     private JTextField updatePriceProductIdField;
     private JTextField updatePriceField;
 
-    // Create Product tab components
+    // Components de l'onglet Créer Produit
     private JTextField newProductIdField;
     private JTextField newProductFamilyIdField;
     private JTextField newProductNameField;
     private JTextField newProductPriceField;
     private JTextField newProductQuantityField;
 
-    // Create Family tab components
+    // Components de l'onglet Créer Famille
     private JTextField newFamilyIdField;
     private JTextField newFamilyNameField;
     private JTextArea familyResultArea;
 
-    // Invoices tab components
+    // Components de l'onglet Factures
     private JTextField invoiceIdField;
     private JTextArea invoiceDetailsArea;
     private JTextField payInvoiceIdField;
 
-    // Reports tab components
+    // Components de l'onglet Rapports
     private JTextField revenueDateField;
     private JLabel revenueResultLabel;
     private JButton saveInvoicesButton;
@@ -85,15 +85,15 @@ public class StockClientUI extends JFrame {
         try {
             Registry registry = LocateRegistry.getRegistry("localhost", 1099);
             stockService = (IStockService) registry.lookup("StockService");
-            JOptionPane.showMessageDialog(this, "Connected to Stock Service successfully!");
+            JOptionPane.showMessageDialog(this, "Connexion au service de stock réussie !");
         } catch (RemoteException | NotBoundException e) {
-            JOptionPane.showMessageDialog(this, "Error connecting to service: " + e.getMessage(),
-                    "Connection Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur de connexion au service : " + e.getMessage(),
+                    "Erreur de connexion", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void initializeUI() {
-        setTitle("Stock Management System");
+        setTitle("Système de Gestion de Stock");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
@@ -104,16 +104,15 @@ public class StockClientUI extends JFrame {
         createInvoicesPanel();
         createReportsPanel();
         createNewProductPanel();
-        createNewFamilyPanel(); // Create the new family panel
+        createNewFamilyPanel();
         createOrderPanel();
 
-        tabbedPane.addTab("Products", productsPanel);
-        tabbedPane.addTab("Create Product", createProductPanel);
-        tabbedPane.addTab("Create Family", createFamilyPanel); // Add the new family tab
-        tabbedPane.addTab("Invoices", invoicesPanel);
-        tabbedPane.addTab("Reports", reportsPanel);
-        tabbedPane.addTab("Orders", orderPanel);
-
+        tabbedPane.addTab("Produits", productsPanel);
+        tabbedPane.addTab("Créer Produit", createProductPanel);
+        tabbedPane.addTab("Créer Famille", createFamilyPanel);
+        tabbedPane.addTab("Factures", invoicesPanel);
+        tabbedPane.addTab("Rapports", reportsPanel);
+        tabbedPane.addTab("Commandes", orderPanel);
 
         add(tabbedPane);
     }
@@ -122,76 +121,76 @@ public class StockClientUI extends JFrame {
         productsPanel = new JPanel(new BorderLayout(10, 10));
         productsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // Top panel for product lookup
+        // Panneau supérieur pour la recherche de produits
         JPanel lookupPanel = new JPanel(new BorderLayout(10, 10));
-        lookupPanel.setBorder(BorderFactory.createTitledBorder("Product Lookup"));
+        lookupPanel.setBorder(BorderFactory.createTitledBorder("Recherche de Produits"));
 
         JPanel lookupInputPanel = new JPanel(new GridLayout(2, 3, 5, 5));
 
-        lookupInputPanel.add(new JLabel("Product ID:"));
+        lookupInputPanel.add(new JLabel("ID Produit :"));
         productIdField = new JTextField();
         lookupInputPanel.add(productIdField);
-        JButton findProductButton = new JButton("Find Product");
+        JButton findProductButton = new JButton("Rechercher Produit");
         findProductButton.addActionListener(e -> findProductById());
         lookupInputPanel.add(findProductButton);
 
-        lookupInputPanel.add(new JLabel("Family ID:"));
+        lookupInputPanel.add(new JLabel("ID Famille :"));
         familyIdField = new JTextField();
         lookupInputPanel.add(familyIdField);
-        JButton findByFamilyButton = new JButton("Find By Family");
+        JButton findByFamilyButton = new JButton("Rechercher par Famille");
         findByFamilyButton.addActionListener(e -> findProductsByFamily());
         lookupInputPanel.add(findByFamilyButton);
 
         lookupPanel.add(lookupInputPanel, BorderLayout.NORTH);
 
-        // Table for displaying products
+        // Tableau pour afficher les produits
         productsTableModel = new DefaultTableModel(
-                new Object[]{"ID", "Family ID", "Name", "Price", "Quantity"}, 0);
+                new Object[]{"ID", "ID Famille", "Nom", "Prix", "Quantité"}, 0);
         productsTable = new JTable(productsTableModel);
         JScrollPane tableScrollPane = new JScrollPane(productsTable);
         lookupPanel.add(tableScrollPane, BorderLayout.CENTER);
 
         productsPanel.add(lookupPanel, BorderLayout.CENTER);
 
-        // Bottom panel for product operations
+        // Panneau inférieur pour les opérations sur les produits
         JPanel operationsPanel = new JPanel(new GridLayout(3, 1, 5, 5));
-        operationsPanel.setBorder(BorderFactory.createTitledBorder("Product Operations"));
+        operationsPanel.setBorder(BorderFactory.createTitledBorder("Opérations sur les Produits"));
 
-        // Purchase product panel
+        // Panneau d'achat de produit
         JPanel purchasePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        purchasePanel.add(new JLabel("Product ID:"));
+        purchasePanel.add(new JLabel("ID Produit :"));
         purchaseProductIdField = new JTextField(5);
         purchasePanel.add(purchaseProductIdField);
-        purchasePanel.add(new JLabel("Quantity:"));
+        purchasePanel.add(new JLabel("Quantité :"));
         purchaseQuantityField = new JTextField(5);
         purchasePanel.add(purchaseQuantityField);
-        JButton purchaseButton = new JButton("Purchase");
+        JButton purchaseButton = new JButton("Acheter");
         purchaseButton.addActionListener(e -> purchaseProduct());
         purchasePanel.add(purchaseButton);
         operationsPanel.add(purchasePanel);
 
-        // Add stock panel
+        // Panneau d'ajout de stock
         JPanel addStockPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        addStockPanel.add(new JLabel("Product ID:"));
+        addStockPanel.add(new JLabel("ID Produit :"));
         addStockProductIdField = new JTextField(5);
         addStockPanel.add(addStockProductIdField);
-        addStockPanel.add(new JLabel("Quantity:"));
+        addStockPanel.add(new JLabel("Quantité :"));
         addStockQuantityField = new JTextField(5);
         addStockPanel.add(addStockQuantityField);
-        JButton addStockButton = new JButton("Add Stock");
+        JButton addStockButton = new JButton("Ajouter Stock");
         addStockButton.addActionListener(e -> addStock());
         addStockPanel.add(addStockButton);
         operationsPanel.add(addStockPanel);
 
-        // Update price panel
+        // Panneau de mise à jour du prix
         JPanel updatePricePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        updatePricePanel.add(new JLabel("Product ID:"));
+        updatePricePanel.add(new JLabel("ID Produit :"));
         updatePriceProductIdField = new JTextField(5);
         updatePricePanel.add(updatePriceProductIdField);
-        updatePricePanel.add(new JLabel("New Price:"));
+        updatePricePanel.add(new JLabel("Nouveau Prix :"));
         updatePriceField = new JTextField(5);
         updatePricePanel.add(updatePriceField);
-        JButton updatePriceButton = new JButton("Update Price");
+        JButton updatePriceButton = new JButton("Mettre à jour Prix");
         updatePriceButton.addActionListener(e -> updateProductPrice());
         updatePricePanel.add(updatePriceButton);
         operationsPanel.add(updatePricePanel);
@@ -204,77 +203,77 @@ public class StockClientUI extends JFrame {
         createProductPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBorder(BorderFactory.createTitledBorder("Create New Product"));
+        formPanel.setBorder(BorderFactory.createTitledBorder("Créer un Nouveau Produit"));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Product ID
+        // ID Produit
         gbc.gridx = 0;
         gbc.gridy = 0;
-        formPanel.add(new JLabel("Product ID:"), gbc);
+        formPanel.add(new JLabel("ID Produit :"), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 0;
         newProductIdField = new JTextField(20);
         formPanel.add(newProductIdField, gbc);
 
-        // Family ID
+        // ID Famille
         gbc.gridx = 0;
         gbc.gridy = 1;
-        formPanel.add(new JLabel("Family ID:"), gbc);
+        formPanel.add(new JLabel("ID Famille :"), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 1;
         newProductFamilyIdField = new JTextField(20);
         formPanel.add(newProductFamilyIdField, gbc);
 
-        // Product Name
+        // Nom du Produit
         gbc.gridx = 0;
         gbc.gridy = 2;
-        formPanel.add(new JLabel("Name:"), gbc);
+        formPanel.add(new JLabel("Nom :"), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 2;
         newProductNameField = new JTextField(20);
         formPanel.add(newProductNameField, gbc);
 
-        // Product Price
+        // Prix du Produit
         gbc.gridx = 0;
         gbc.gridy = 3;
-        formPanel.add(new JLabel("Price:"), gbc);
+        formPanel.add(new JLabel("Prix :"), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 3;
         newProductPriceField = new JTextField(20);
         formPanel.add(newProductPriceField, gbc);
 
-        // Product Quantity
+        // Quantité du Produit
         gbc.gridx = 0;
         gbc.gridy = 4;
-        formPanel.add(new JLabel("Initial Quantity:"), gbc);
+        formPanel.add(new JLabel("Quantité Initiale :"), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 4;
         newProductQuantityField = new JTextField(20);
         formPanel.add(newProductQuantityField, gbc);
 
-        // Create Button
+        // Bouton Créer
         gbc.gridx = 0;
         gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
-        JButton createButton = new JButton("Create Product");
+        JButton createButton = new JButton("Créer Produit");
         createButton.addActionListener(e -> createProduct());
         formPanel.add(createButton, gbc);
 
-        // Add form to panel
+        // Ajouter le formulaire au panneau
         createProductPanel.add(formPanel, BorderLayout.NORTH);
 
-        // Add a result panel
+        // Ajouter un panneau de résultats
         JPanel resultPanel = new JPanel(new BorderLayout());
-        resultPanel.setBorder(BorderFactory.createTitledBorder("Results"));
+        resultPanel.setBorder(BorderFactory.createTitledBorder("Résultats"));
 
         JTextArea resultArea = new JTextArea(10, 30);
         resultArea.setEditable(false);
@@ -289,47 +288,47 @@ public class StockClientUI extends JFrame {
         createFamilyPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBorder(BorderFactory.createTitledBorder("Create New Family"));
+        formPanel.setBorder(BorderFactory.createTitledBorder("Créer une Nouvelle Famille"));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        // Family ID
+        // ID Famille
         gbc.gridx = 0;
         gbc.gridy = 0;
-        formPanel.add(new JLabel("Family ID:"), gbc);
+        formPanel.add(new JLabel("ID Famille :"), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 0;
         newFamilyIdField = new JTextField(20);
         formPanel.add(newFamilyIdField, gbc);
 
-        // Family Name
+        // Nom de la Famille
         gbc.gridx = 0;
         gbc.gridy = 1;
-        formPanel.add(new JLabel("Name:"), gbc);
+        formPanel.add(new JLabel("Nom :"), gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 1;
         newFamilyNameField = new JTextField(20);
         formPanel.add(newFamilyNameField, gbc);
 
-        // Create Button
+        // Bouton Créer
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
-        JButton createButton = new JButton("Create Family");
+        JButton createButton = new JButton("Créer Famille");
         createButton.addActionListener(e -> createFamily());
         formPanel.add(createButton, gbc);
 
-        // Add form to panel
+        // Ajouter le formulaire au panneau
         createFamilyPanel.add(formPanel, BorderLayout.NORTH);
 
-        // Add a result panel
+        // Ajouter un panneau de résultats
         JPanel resultPanel = new JPanel(new BorderLayout());
-        resultPanel.setBorder(BorderFactory.createTitledBorder("Results"));
+        resultPanel.setBorder(BorderFactory.createTitledBorder("Résultats"));
 
         familyResultArea = new JTextArea(10, 30);
         familyResultArea.setEditable(false);
@@ -343,21 +342,21 @@ public class StockClientUI extends JFrame {
         invoicesPanel = new JPanel(new BorderLayout(10, 10));
         invoicesPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // Invoice lookup panel
+        // Panneau de recherche de facture
         JPanel invoiceLookupPanel = new JPanel(new BorderLayout(10, 10));
-        invoiceLookupPanel.setBorder(BorderFactory.createTitledBorder("Invoice Lookup"));
+        invoiceLookupPanel.setBorder(BorderFactory.createTitledBorder("Recherche de Facture"));
 
         JPanel lookupInputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        lookupInputPanel.add(new JLabel("Invoice ID:"));
+        lookupInputPanel.add(new JLabel("ID Facture :"));
         invoiceIdField = new JTextField(10);
         lookupInputPanel.add(invoiceIdField);
-        JButton findInvoiceButton = new JButton("Find Invoice");
+        JButton findInvoiceButton = new JButton("Rechercher Facture");
         findInvoiceButton.addActionListener(e -> findInvoice());
         lookupInputPanel.add(findInvoiceButton);
 
         invoiceLookupPanel.add(lookupInputPanel, BorderLayout.NORTH);
 
-        // Invoice details area
+        // Zone de détails de la facture
         invoiceDetailsArea = new JTextArea();
         invoiceDetailsArea.setEditable(false);
         JScrollPane detailsScrollPane = new JScrollPane(invoiceDetailsArea);
@@ -365,13 +364,13 @@ public class StockClientUI extends JFrame {
 
         invoicesPanel.add(invoiceLookupPanel, BorderLayout.CENTER);
 
-        // Invoice payment panel
+        // Panneau de paiement de facture
         JPanel paymentPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        paymentPanel.setBorder(BorderFactory.createTitledBorder("Pay Invoice"));
-        paymentPanel.add(new JLabel("Invoice ID:"));
+        paymentPanel.setBorder(BorderFactory.createTitledBorder("Payer Facture"));
+        paymentPanel.add(new JLabel("ID Facture :"));
         payInvoiceIdField = new JTextField(10);
         paymentPanel.add(payInvoiceIdField);
-        JButton payInvoiceButton = new JButton("Pay Invoice");
+        JButton payInvoiceButton = new JButton("Payer Facture");
         payInvoiceButton.addActionListener(e -> payInvoice());
         paymentPanel.add(payInvoiceButton);
 
@@ -382,94 +381,94 @@ public class StockClientUI extends JFrame {
         reportsPanel = new JPanel(new BorderLayout(10, 10));
         reportsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // Revenue calculation panel
+        // Panneau de calcul des revenus
         JPanel revenuePanel = new JPanel(new BorderLayout(10, 10));
-        revenuePanel.setBorder(BorderFactory.createTitledBorder("Revenue Calculation"));
+        revenuePanel.setBorder(BorderFactory.createTitledBorder("Calcul des Revenus"));
 
         JPanel revenueInputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        revenueInputPanel.add(new JLabel("Date (yyyy-MM-dd):"));
+        revenueInputPanel.add(new JLabel("Date (aaaa-MM-jj) :"));
         revenueDateField = new JTextField(10);
         revenueInputPanel.add(revenueDateField);
-        JButton calculateButton = new JButton("Calculate Revenue");
+        JButton calculateButton = new JButton("Calculer Revenus");
         calculateButton.addActionListener(e -> calculateRevenue());
         revenueInputPanel.add(calculateButton);
 
         revenuePanel.add(revenueInputPanel, BorderLayout.NORTH);
 
         JPanel resultPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        resultPanel.add(new JLabel("Total Revenue: "));
-        revenueResultLabel = new JLabel("€0.00");
+        resultPanel.add(new JLabel("Total des Revenus : "));
+        revenueResultLabel = new JLabel("€0,00");
         resultPanel.add(revenueResultLabel);
 
         revenuePanel.add(resultPanel, BorderLayout.CENTER);
 
         reportsPanel.add(revenuePanel, BorderLayout.NORTH);
 
-        // Save invoices panel
+        // Panneau de sauvegarde des factures
         JPanel savePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        savePanel.setBorder(BorderFactory.createTitledBorder("Save Invoices"));
-        saveInvoicesButton = new JButton("Save Invoices to Server");
+        savePanel.setBorder(BorderFactory.createTitledBorder("Sauvegarder Factures"));
+        saveInvoicesButton = new JButton("Sauvegarder Factures sur le Serveur");
         saveInvoicesButton.addActionListener(e -> saveInvoices());
         savePanel.add(saveInvoicesButton);
 
         reportsPanel.add(savePanel, BorderLayout.CENTER);
     }
 
-    // Create Family method
+    // Méthode Créer Famille
     private void createFamily() {
         try {
-            // Validate inputs
+            // Valider les entrées
             if (newFamilyIdField.getText().trim().isEmpty() ||
                     newFamilyNameField.getText().trim().isEmpty()) {
 
-                JOptionPane.showMessageDialog(this, "Please fill all fields!",
-                        "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Veuillez remplir tous les champs !",
+                        "Erreur de Saisie", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             int id = Integer.parseInt(newFamilyIdField.getText().trim());
             String name = newFamilyNameField.getText().trim();
 
-            // Create family object
+            // Créer l'objet famille
             Family family = new Family(id, name);
 
-            // Call remote method
+            // Appeler la méthode distante
             boolean success = stockService.createFamily(family);
 
             if (success) {
-                JOptionPane.showMessageDialog(this, "Family created successfully!");
-                // Display the created family
-                familyResultArea.setText("Family created:\n" +
-                        "ID: " + id + "\n" +
-                        "Name: " + name);
-                // Clear the form
+                JOptionPane.showMessageDialog(this, "Famille créée avec succès !");
+                // Afficher la famille créée
+                familyResultArea.setText("Famille créée :\n" +
+                        "ID : " + id + "\n" +
+                        "Nom : " + name);
+                // Vider le formulaire
                 newFamilyIdField.setText("");
                 newFamilyNameField.setText("");
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to create family! It might already exist.",
-                        "Creation Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Échec de la création de la famille ! Elle existe peut-être déjà.",
+                        "Erreur de Création", JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid numeric value for Family ID!",
-                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Veuillez saisir une valeur numérique valide pour l'ID de la Famille !",
+                    "Erreur de Saisie", JOptionPane.ERROR_MESSAGE);
         } catch (RemoteException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(),
-                    "Remote Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur : " + e.getMessage(),
+                    "Erreur Distante", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    // Create Product method
+    // Méthode Créer Produit
     private void createProduct() {
         try {
-            // Validate inputs
+            // Valider les entrées
             if (newProductIdField.getText().trim().isEmpty() ||
                     newProductFamilyIdField.getText().trim().isEmpty() ||
                     newProductNameField.getText().trim().isEmpty() ||
                     newProductPriceField.getText().trim().isEmpty() ||
                     newProductQuantityField.getText().trim().isEmpty()) {
 
-                JOptionPane.showMessageDialog(this, "Please fill all fields!",
-                        "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Veuillez remplir tous les champs !",
+                        "Erreur de Saisie", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -480,45 +479,45 @@ public class StockClientUI extends JFrame {
             int quantity = Integer.parseInt(newProductQuantityField.getText().trim());
 
             if (price <= 0) {
-                JOptionPane.showMessageDialog(this, "Price must be greater than 0!",
-                        "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Le prix doit être supérieur à 0 !",
+                        "Erreur de Saisie", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             if (quantity < 0) {
-                JOptionPane.showMessageDialog(this, "Quantity cannot be negative!",
-                        "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "La quantité ne peut pas être négative !",
+                        "Erreur de Saisie", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            // Create product object
+            // Créer l'objet produit
             Product product = new Product(id, familyId, name, price, quantity);
 
-            // Call remote method
+            // Appeler la méthode distante
             boolean success = stockService.createProduct(product);
 
             if (success) {
-                JOptionPane.showMessageDialog(this, "Product created successfully!");
-                // Clear the form
+                JOptionPane.showMessageDialog(this, "Produit créé avec succès !");
+                // Vider le formulaire
                 newProductIdField.setText("");
                 newProductFamilyIdField.setText("");
                 newProductNameField.setText("");
                 newProductPriceField.setText("");
                 newProductQuantityField.setText("");
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to create product! It might already exist.",
-                        "Creation Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Échec de la création du produit ! Il existe peut-être déjà.",
+                        "Erreur de Création", JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter valid numeric values for ID, Family ID, Price, and Quantity!",
-                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Veuillez saisir des valeurs numériques valides pour l'ID, l'ID Famille, le Prix et la Quantité !",
+                    "Erreur de Saisie", JOptionPane.ERROR_MESSAGE);
         } catch (RemoteException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(),
-                    "Remote Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur : " + e.getMessage(),
+                    "Erreur Distante", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    // Product methods
+    // Méthodes des produits
     private void findProductById() {
         try {
             int productId = Integer.parseInt(productIdField.getText().trim());
@@ -527,17 +526,17 @@ public class StockClientUI extends JFrame {
             if (product != null) {
                 clearProductsTable();
                 addProductToTable(product);
-                JOptionPane.showMessageDialog(this, "Product found!");
+                JOptionPane.showMessageDialog(this, "Produit trouvé !");
             } else {
-                JOptionPane.showMessageDialog(this, "Product not found!",
-                        "Not Found", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Produit non trouvé !",
+                        "Non Trouvé", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid product ID!",
-                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Veuillez saisir un ID de produit valide !",
+                    "Erreur de Saisie", JOptionPane.ERROR_MESSAGE);
         } catch (RemoteException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(),
-                    "Remote Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur : " + e.getMessage(),
+                    "Erreur Distante", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -552,17 +551,17 @@ public class StockClientUI extends JFrame {
                 for (Product product : products) {
                     addProductToTable(product);
                 }
-                JOptionPane.showMessageDialog(this, products.size() + " products found!");
+                JOptionPane.showMessageDialog(this, products.size() + " produits trouvés !");
             } else {
-                JOptionPane.showMessageDialog(this, "No products found in this family or family does not exist!",
-                        "Not Found", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Aucun produit trouvé dans cette famille ou la famille n'existe pas !",
+                        "Non Trouvé", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid family ID!",
-                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Veuillez saisir un ID de famille valide !",
+                    "Erreur de Saisie", JOptionPane.ERROR_MESSAGE);
         } catch (RemoteException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(),
-                    "Remote Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur : " + e.getMessage(),
+                    "Erreur Distante", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -572,31 +571,31 @@ public class StockClientUI extends JFrame {
             int quantity = Integer.parseInt(purchaseQuantityField.getText().trim());
 
             if (quantity <= 0) {
-                JOptionPane.showMessageDialog(this, "Quantity must be greater than 0!",
-                        "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "La quantité doit être supérieure à 0 !",
+                        "Erreur de Saisie", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             boolean success = stockService.purchaseProduct(productId, quantity);
 
             if (success) {
-                JOptionPane.showMessageDialog(this, "Purchase successful!");
+                JOptionPane.showMessageDialog(this, "Achat réussi !");
                 purchaseProductIdField.setText("");
                 purchaseQuantityField.setText("");
-                // Refresh product view if it was the current product
+                // Actualiser la vue du produit s'il s'agit du produit actuel
                 if (productIdField.getText().trim().equals(String.valueOf(productId))) {
                     findProductById();
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Purchase failed! Check product availability.",
-                        "Purchase Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Achat échoué ! Vérifiez la disponibilité du produit.",
+                        "Erreur d'Achat", JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter valid product ID and quantity!",
-                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Veuillez saisir un ID de produit et une quantité valides !",
+                    "Erreur de Saisie", JOptionPane.ERROR_MESSAGE);
         } catch (RemoteException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(),
-                    "Remote Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur : " + e.getMessage(),
+                    "Erreur Distante", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -606,31 +605,31 @@ public class StockClientUI extends JFrame {
             int quantity = Integer.parseInt(addStockQuantityField.getText().trim());
 
             if (quantity <= 0) {
-                JOptionPane.showMessageDialog(this, "Quantity must be greater than 0!",
-                        "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "La quantité doit être supérieure à 0 !",
+                        "Erreur de Saisie", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             boolean success = stockService.addStock(productId, quantity);
 
             if (success) {
-                JOptionPane.showMessageDialog(this, "Stock added successfully!");
+                JOptionPane.showMessageDialog(this, "Stock ajouté avec succès !");
                 addStockProductIdField.setText("");
                 addStockQuantityField.setText("");
-                // Refresh product view if it was the current product
+                // Actualiser la vue du produit s'il s'agit du produit actuel
                 if (productIdField.getText().trim().equals(String.valueOf(productId))) {
                     findProductById();
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to add stock! Product may not exist.",
-                        "Stock Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Échec de l'ajout de stock ! Le produit n'existe peut-être pas.",
+                        "Erreur de Stock", JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter valid product ID and quantity!",
-                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Veuillez saisir un ID de produit et une quantité valides !",
+                    "Erreur de Saisie", JOptionPane.ERROR_MESSAGE);
         } catch (RemoteException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(),
-                    "Remote Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur : " + e.getMessage(),
+                    "Erreur Distante", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -640,35 +639,36 @@ public class StockClientUI extends JFrame {
             float newPrice = Float.parseFloat(updatePriceField.getText().trim());
 
             if (newPrice <= 0) {
-                JOptionPane.showMessageDialog(this, "Price must be greater than 0!",
-                        "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Le prix doit être supérieur à 0 !",
+                        "Erreur de Saisie", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             boolean success = stockService.updateProductPrice(productId, newPrice);
 
             if (success) {
-                JOptionPane.showMessageDialog(this, "Price updated successfully!");
+                JOptionPane.showMessageDialog(this, "Prix mis à jour avec succès !");
                 updatePriceProductIdField.setText("");
                 updatePriceField.setText("");
-                // Refresh product view if it was the current product
+                // Actualiser la vue du produit s'il s'agit du produit actuel
                 if (productIdField.getText().trim().equals(String.valueOf(productId))) {
                     findProductById();
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to update price! Product may not exist.",
-                        "Update Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Échec de la mise à jour du prix ! Le produit n'existe peut-être pas.",
+                        "Erreur de Mise à Jour", JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter valid product ID and price!",
-                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Veuillez saisir un ID de produit et un prix valides !",
+                    "Erreur de Saisie", JOptionPane.ERROR_MESSAGE);
         } catch (RemoteException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(),
-                    "Remote Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur : " + e.getMessage(),
+                    "Erreur Distante", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     // Invoice methods
+// Méthodes de facture
     private void findInvoice() {
         try {
             int invoiceId = Integer.parseInt(invoiceIdField.getText().trim());
@@ -677,18 +677,18 @@ public class StockClientUI extends JFrame {
 
             if (invoice != null) {
                 displayInvoice(invoice);
-                JOptionPane.showMessageDialog(this, "Found!");
+                JOptionPane.showMessageDialog(this, "Trouvé !");
             } else {
-                invoiceDetailsArea.setText("Invoice not found!");
-                JOptionPane.showMessageDialog(this, "Invoice not found!",
-                        "Not Found", JOptionPane.INFORMATION_MESSAGE);
+                invoiceDetailsArea.setText("Facture introuvable !");
+                JOptionPane.showMessageDialog(this, "Facture introuvable !",
+                        "Non trouvé", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid invoice ID!",
-                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Veuillez saisir un ID de facture valide !",
+                    "Erreur de saisie", JOptionPane.ERROR_MESSAGE);
         } catch (RemoteException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(),
-                    "Remote Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur : " + e.getMessage(),
+                    "Erreur distante", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -698,47 +698,47 @@ public class StockClientUI extends JFrame {
             boolean success = stockService.payInvoice(invoiceId);
 
             if (success) {
-                JOptionPane.showMessageDialog(this, "Invoice paid successfully!");
+                JOptionPane.showMessageDialog(this, "Facture payée avec succès !");
                 payInvoiceIdField.setText("");
-                // Refresh invoice view if it was the current invoice
+                // Actualiser la vue facture si c'était la facture courante
                 if (invoiceIdField.getText().trim().equals(String.valueOf(invoiceId))) {
                     findInvoice();
                 }
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to pay invoice! Invoice may not exist or is already paid.",
-                        "Payment Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Échec du paiement de la facture ! La facture n'existe peut-être pas ou est déjà payée.",
+                        "Erreur de paiement", JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid invoice ID!",
-                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Veuillez saisir un ID de facture valide !",
+                    "Erreur de saisie", JOptionPane.ERROR_MESSAGE);
         } catch (RemoteException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(),
-                    "Remote Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur : " + e.getMessage(),
+                    "Erreur distante", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    // Report methods
+    // Méthodes de rapport
     private void calculateRevenue() {
         try {
             String dateStr = revenueDateField.getText().trim();
-            // Validate date format
+            // Valider le format de date
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             sdf.setLenient(false);
             try {
                 Date date = sdf.parse(dateStr);
             } catch (ParseException e) {
-                JOptionPane.showMessageDialog(this, "Please enter a valid date in format yyyy-MM-dd!",
-                        "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Veuillez saisir une date valide au format yyyy-MM-dd !",
+                        "Erreur de saisie", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             System.out.println("date : " + dateStr);
             double revenue = stockService.calculateRevenue(dateStr);
             System.out.println("recette : " + revenue);
-            revenueResultLabel.setText(String.format("€%.2f", revenue));
+            revenueResultLabel.setText(String.format("%.2f€", revenue));
 
         } catch (RemoteException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(),
-                    "Remote Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur : " + e.getMessage(),
+                    "Erreur distante", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -747,18 +747,18 @@ public class StockClientUI extends JFrame {
             boolean success = stockService.saveInvoicesToServer();
 
             if (success) {
-                JOptionPane.showMessageDialog(this, "Invoices saved successfully!");
+                JOptionPane.showMessageDialog(this, "Factures sauvegardées avec succès !");
             } else {
-                JOptionPane.showMessageDialog(this, "Failed to save invoices!",
-                        "Save Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Échec de la sauvegarde des factures !",
+                        "Erreur de sauvegarde", JOptionPane.ERROR_MESSAGE);
             }
         } catch (RemoteException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(),
-                    "Remote Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur : " + e.getMessage(),
+                    "Erreur distante", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    // Helper methods
+    // Méthodes utilitaires
     private void clearProductsTable() {
         while (productsTableModel.getRowCount() > 0) {
             productsTableModel.removeRow(0);
@@ -779,12 +779,12 @@ public class StockClientUI extends JFrame {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Invoice Details:\n\n");
-        sb.append("Invoice ID: ").append(invoice.getId()).append("\n");
-        sb.append("Date: ").append(invoice.getDate().format(dtf)).append("\n");
-        sb.append("Total Amount: €").append(String.format("%.2f", invoice.getPrice())).append("\n");
-        sb.append("Payment Method: ").append(invoice.getPayment_method()).append("\n");
-        sb.append("Status: ").append(invoice.isPaid() ? "Paid" : "Unpaid").append("\n");
+        sb.append("Détails de la facture :\n\n");
+        sb.append("ID Facture : ").append(invoice.getId()).append("\n");
+        sb.append("Date : ").append(invoice.getDate().format(dtf)).append("\n");
+        sb.append("Montant total : ").append(String.format("%.2f€", invoice.getPrice())).append("\n");
+        sb.append("Méthode de paiement : ").append(invoice.getPayment_method()).append("\n");
+        sb.append("Statut : ").append(invoice.isPaid() ? "Payé" : "Non payé").append("\n");
 
         invoiceDetailsArea.setText(sb.toString());
     }
@@ -793,44 +793,44 @@ public class StockClientUI extends JFrame {
         orderPanel = new JPanel(new BorderLayout(10, 10));
         orderPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // --- Top Input Section ---
+        // --- Section de saisie en haut ---
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        inputPanel.setBorder(BorderFactory.createTitledBorder("Add Product to Order"));
+        inputPanel.setBorder(BorderFactory.createTitledBorder("Ajouter un produit à la commande"));
 
-        inputPanel.add(new JLabel("Product ID:"));
+        inputPanel.add(new JLabel("ID Produit :"));
         orderProductIdField = new JTextField(5);
         inputPanel.add(orderProductIdField);
 
-        inputPanel.add(new JLabel("Quantity:"));
+        inputPanel.add(new JLabel("Quantité :"));
         orderQuantityField = new JTextField(5);
         inputPanel.add(orderQuantityField);
 
-        JButton addToOrderButton = new JButton("Add to Order");
+        JButton addToOrderButton = new JButton("Ajouter à la commande");
         addToOrderButton.addActionListener(e -> addProductToOrder());
         inputPanel.add(addToOrderButton);
 
         orderPanel.add(inputPanel, BorderLayout.NORTH);
 
-        // --- Center Table ---
-        orderTableModel = new DefaultTableModel(new Object[]{"Product ID", "Name", "Quantity", "Unit Price", "Total"}, 0);
+        // --- Tableau central ---
+        orderTableModel = new DefaultTableModel(new Object[]{"ID Produit", "Nom", "Quantité", "Prix unitaire", "Total"}, 0);
         orderTable = new JTable(orderTableModel);
         JScrollPane tableScroll = new JScrollPane(orderTable);
-        tableScroll.setBorder(BorderFactory.createTitledBorder("Current Order"));
+        tableScroll.setBorder(BorderFactory.createTitledBorder("Commande courante"));
         orderPanel.add(tableScroll, BorderLayout.CENTER);
 
-        // --- Bottom Summary + Buttons ---
+        // --- Résumé et boutons en bas ---
         JPanel bottomPanel = new JPanel(new BorderLayout(10, 10));
 
-        // Summary
+        // Résumé
         orderSummaryArea = new JTextArea(5, 30);
         orderSummaryArea.setEditable(false);
         JScrollPane summaryScroll = new JScrollPane(orderSummaryArea);
-        summaryScroll.setBorder(BorderFactory.createTitledBorder("Order Summary"));
+        summaryScroll.setBorder(BorderFactory.createTitledBorder("Résumé de la commande"));
         bottomPanel.add(summaryScroll, BorderLayout.CENTER);
 
-        // Action buttons
+        // Boutons d'action
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton confirmOrderButton = new JButton("Confirm Order");
+        JButton confirmOrderButton = new JButton("Confirmer la commande");
         confirmOrderButton.addActionListener(e -> {
             try {
                 confirmOrder();
@@ -842,28 +842,29 @@ public class StockClientUI extends JFrame {
         });
         buttonPanel.add(confirmOrderButton);
 
-        JButton clearOrderButton = new JButton("Clear Order");
+        JButton clearOrderButton = new JButton("Vider la commande");
         clearOrderButton.addActionListener(e -> clearOrder());
         buttonPanel.add(clearOrderButton);
 
         bottomPanel.add(buttonPanel, BorderLayout.SOUTH);
         orderPanel.add(bottomPanel, BorderLayout.SOUTH);
     }
+
     private void addProductToOrder() {
         try {
             int productId = Integer.parseInt(orderProductIdField.getText().trim());
             int quantity = Integer.parseInt(orderQuantityField.getText().trim());
 
             if (quantity <= 0) {
-                JOptionPane.showMessageDialog(this, "Quantity must be greater than 0!",
-                        "Input Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "La quantité doit être supérieure à 0 !",
+                        "Erreur de saisie", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             Product product = stockService.getProductById(productId);
             if (product == null) {
-                JOptionPane.showMessageDialog(this, "Product not found!",
-                        "Product Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Produit introuvable !",
+                        "Erreur produit", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -881,11 +882,11 @@ public class StockClientUI extends JFrame {
             orderQuantityField.setText("");
 
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Invalid product ID or quantity!",
-                    "Input Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "ID produit ou quantité invalide !",
+                    "Erreur de saisie", JOptionPane.ERROR_MESSAGE);
         } catch (RemoteException e) {
-            JOptionPane.showMessageDialog(this, "Remote error: " + e.getMessage(),
-                    "Remote Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur distante : " + e.getMessage(),
+                    "Erreur distante", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -897,15 +898,15 @@ public class StockClientUI extends JFrame {
             grandTotal += (double) orderTableModel.getValueAt(i, 4);
         }
 
-        orderSummaryArea.setText("Items in Order: " + rowCount + "\n");
-        orderSummaryArea.append("Total Amount: €" + String.format("%.2f", grandTotal));
+        orderSummaryArea.setText("Articles dans la commande : " + rowCount + "\n");
+        orderSummaryArea.append("Montant total : " + String.format("%.2f€", grandTotal));
     }
 
     private void confirmOrder() throws RemoteException, SQLException {
         int rowCount = orderTableModel.getRowCount();
         if (rowCount == 0) {
-            JOptionPane.showMessageDialog(this, "No items in the order!",
-                    "Order Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Aucun article dans la commande !",
+                    "Erreur de commande", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -919,8 +920,8 @@ public class StockClientUI extends JFrame {
                 boolean success = stockService.purchaseProduct(productId, quantity);
                 if (!success) allSuccessful = false;
             } catch (RemoteException e) {
-                JOptionPane.showMessageDialog(this, "Error confirming item: " + productId,
-                        "Remote Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Erreur lors de la confirmation de l'article : " + productId,
+                        "Erreur distante", JOptionPane.ERROR_MESSAGE);
                 allSuccessful = false;
             }
         }
@@ -930,17 +931,17 @@ public class StockClientUI extends JFrame {
             System.out.println("Invoice ID: " + invoiceId);
             //func param invoiceId
             saveOrderDetail(invoiceId);
-            JOptionPane.showMessageDialog(this, "Order confirmed successfully!");
+            JOptionPane.showMessageDialog(this, "Commande confirmée avec succès !");
             clearOrder();
         } else {
-            JOptionPane.showMessageDialog(this, "Some items could not be ordered!",
-                    "Partial Success", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Certains articles n'ont pas pu être commandés !",
+                    "Succès partiel", JOptionPane.WARNING_MESSAGE);
         }
     }
 
     public Long saveOrder() throws RemoteException {
-          String totalAmountString = orderSummaryArea.getText();
-          float totalAmount = getAmountFromorderSummaryArea(totalAmountString);
+        String totalAmountString = orderSummaryArea.getText();
+        float totalAmount = getAmountFromorderSummaryArea(totalAmountString);
         return stockService.saveInvoice(totalAmount);
     }
 
@@ -982,14 +983,14 @@ public class StockClientUI extends JFrame {
         float totalAmount = 0;
 
         for (String line : lines) {
-            if (line.startsWith("Total Amount:")) {
-                String amountStr = line.replace("Total Amount: €", "").trim();
+            if (line.startsWith("Montant total :")) {
+                String amountStr = line.replace("Montant total : ", "").replace("€", "").trim();
                 amountStr = amountStr.replace(",", ".");
                 totalAmount = Float.parseFloat(amountStr);
                 break;
             }
         }
-          return totalAmount;
+        return totalAmount;
     }
 
     private void clearOrder() {
