@@ -1,6 +1,11 @@
 package common.tables.mainshop;
 
-public class CProduct {
+import common.tables.Product;
+import java.io.Serializable;
+
+public class CProduct implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private int id;
     private String name;
     private float price;
@@ -78,5 +83,15 @@ public class CProduct {
     @Override
     public int hashCode() {
         return Integer.hashCode(id);
+    }
+
+    public Product toProduct() {
+        return new Product(
+                this.id,
+                1,
+                this.name,
+                this.price,
+                this.quantity
+        );
     }
 }

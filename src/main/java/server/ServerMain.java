@@ -1,6 +1,8 @@
 package server;
 
 import common.IStockService;
+import common.tables.mainshop.Shop;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -18,6 +20,10 @@ public class ServerMain {
 
             // Init database components\
             server.DbManager.init();
+
+            // Init batch
+            System.out.println("Update");
+            service.updateDataBaseFromMain(new Shop(3, "Shop n°3 - Samsonite"));
 
             System.out.println("Serveur RMI démarré...");
         } catch (Exception e) {

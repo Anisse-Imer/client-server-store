@@ -1,7 +1,7 @@
 package common.dao.mainshop;
 
 import common.tables.mainshop.Shop;
-import server.DbManager;
+import server.main.CDbManager;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ public class ShopDAO {
 
     public Long addShop(Shop shop) {
         String sql = "INSERT INTO shop (shop_name) VALUES (?)";
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, shop.getShopName());
@@ -42,7 +42,7 @@ public class ShopDAO {
     public Shop getShopById(int id) {
         String sql = "SELECT * FROM shop WHERE id = ?";
 
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
@@ -67,7 +67,7 @@ public class ShopDAO {
         List<Shop> shops = new ArrayList<>();
         String sql = "SELECT * FROM shop";
 
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -87,7 +87,7 @@ public class ShopDAO {
 
     public boolean updateShop(Shop shop) {
         String sql = "UPDATE shop SET shop_name = ? WHERE id = ?";
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, shop.getShopName());
@@ -104,7 +104,7 @@ public class ShopDAO {
 
     public boolean deleteShop(int id) {
         String sql = "DELETE FROM shop WHERE id = ?";
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
@@ -119,7 +119,7 @@ public class ShopDAO {
 
     public boolean shopExists(String shopName) {
         String sql = "SELECT COUNT(*) FROM shop WHERE shop_name = ?";
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, shopName);

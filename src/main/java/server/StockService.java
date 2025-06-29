@@ -1,16 +1,26 @@
 package server;
 
+import common.IShopService;
 import common.dao.FamilyDAO;
 import common.dao.InvoiceDAO;
 import common.dao.InvoiceDetailDAO;
 import common.dao.ProductDAO;
+import common.dao.mainshop.CProductDAO;
+import common.dao.mainshop.ShopDAO;
 import common.tables.*;
 import common.IStockService;
+import common.tables.mainshop.CProduct;
+import common.tables.mainshop.Shop;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectStreamClass;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -19,7 +29,6 @@ import java.util.stream.Collectors;
 
 // Étendre UnicastRemoteObject pour en faire un objet distant
 public class StockService extends UnicastRemoteObject implements IStockService {
-
     // Map pour stocker les factures en mémoire (pour la démo)
     private Map<Integer, Invoice> invoices = new HashMap<>();
 
@@ -264,15 +273,50 @@ public class StockService extends UnicastRemoteObject implements IStockService {
 
     @Override
     public Long saveInvoiceDetails(int productId, Long invoiceId, float price, int quantity) throws RemoteException {
-    try {
-        //        Invoice
-        InvoiceDetail invoiceDetail = new InvoiceDetail(productId, invoiceId, price, quantity);
-        InvoiceDetailDAO dao = new InvoiceDetailDAO();
-        return dao.addInvoiceDetail(invoiceDetail);
-    } catch (SQLException e) {
-        throw new RuntimeException(e);
+        try {
+            //        Invoice
+            InvoiceDetail invoiceDetail = new InvoiceDetail(productId, invoiceId, price, quantity);
+            InvoiceDetailDAO dao = new InvoiceDetailDAO();
+            return dao.addInvoiceDetail(invoiceDetail);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    }
+    @Override
+    public void updateDataBaseFromMain(Shop shop) {
+        try {
+            // Shop - create and update
+            ShopDAO shopDAO = new ShopDAO();
+            if (shopDAO.shopExists(shop.getShopName()))
+                shopDAO.updateShop(shop);
+            else
+                shopDAO.addShop(shop);
+            // Products get - create and update
+            Registry registry = LocateRegistry.getRegistry("localhost", 1098);
+            IShopService shopService = (IShopService) registry.lookup("ShopService");
+            List<CProduct> products = shopService.getAllProducts();
 
+            ProductDAO productDAO = new ProductDAO();
+            Product currentProduct;
+            for (CProduct product : products) {
+                System.out.println(product);
+                currentProduct = productDAO.getProductById(product.getId());
+                if (currentProduct == null)
+                    productDAO.addProduct2(product.toProduct());
+                else
+                    productDAO.updateProduct2(
+                            new Product(
+                                    currentProduct.getId(),
+                                    currentProduct.getId_family(),
+                                    product.getName(),
+                                    product.getPrice(),
+                                    currentProduct.getQuantity()
+                            )
+                    );
+            }
+        } catch (RemoteException | NotBoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

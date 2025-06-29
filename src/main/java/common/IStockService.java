@@ -1,6 +1,7 @@
 package common;
 
 import common.tables.*;
+import common.tables.mainshop.Shop;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -47,4 +48,6 @@ public interface IStockService extends Remote {
     Long saveInvoice(float totalAmount) throws RemoteException;
 
     Long saveInvoiceDetails(int productId, Long invoiceId, float price, int quantity) throws RemoteException;
+
+    void updateDataBaseFromMain(Shop shop) throws Exception;
 }
