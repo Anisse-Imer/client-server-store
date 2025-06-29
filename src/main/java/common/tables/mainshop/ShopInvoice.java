@@ -1,8 +1,11 @@
 package common.tables.mainshop;
 
+import java.io.Serializable;
 import java.sql.Date;
 
-public class ShopInvoice {
+public class ShopInvoice implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private int id;
     private int idCopy;
     private int idShop;

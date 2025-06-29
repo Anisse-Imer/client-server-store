@@ -1,7 +1,7 @@
 package common.dao.mainshop;
 
 import common.tables.Invoice;
-import server.DbManager;
+import server.main.CDbManager;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -12,7 +12,7 @@ public class ShopInvoiceDAO {
 
     public Long addShopInvoice(int idCopy, int shopId, Invoice invoice) {
         String sql = "INSERT INTO shop_invoice (id_copy, id_shop, price, payment_method, date, paid) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, idCopy);
@@ -48,7 +48,7 @@ public class ShopInvoiceDAO {
     public Invoice getShopInvoiceById(int id) {
         String sql = "SELECT * FROM shop_invoice WHERE id = ?";
 
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
@@ -76,7 +76,7 @@ public class ShopInvoiceDAO {
         List<Invoice> invoices = new ArrayList<>();
         String sql = "SELECT * FROM shop_invoice";
 
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -101,7 +101,7 @@ public class ShopInvoiceDAO {
         List<Invoice> invoices = new ArrayList<>();
         String sql = "SELECT * FROM shop_invoice WHERE id_shop = ?";
 
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, shopId);
@@ -128,7 +128,7 @@ public class ShopInvoiceDAO {
         List<Invoice> invoices = new ArrayList<>();
         String sql = "SELECT * FROM shop_invoice WHERE id_shop = ? AND paid = TRUE";
 
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, shopId);
@@ -155,7 +155,7 @@ public class ShopInvoiceDAO {
         List<Invoice> invoices = new ArrayList<>();
         String sql = "SELECT * FROM shop_invoice WHERE id_shop = ? AND paid = FALSE";
 
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, shopId);
@@ -180,7 +180,7 @@ public class ShopInvoiceDAO {
 
     public boolean updateShopInvoice(int id, int idCopy, int shopId, Invoice invoice) {
         String sql = "UPDATE shop_invoice SET id_copy = ?, id_shop = ?, price = ?, payment_method = ?, date = ?, paid = ? WHERE id = ?";
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, idCopy);
@@ -202,7 +202,7 @@ public class ShopInvoiceDAO {
 
     public boolean markInvoiceAsPaid(int id) {
         String sql = "UPDATE shop_invoice SET paid = TRUE WHERE id = ?";
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
@@ -217,7 +217,7 @@ public class ShopInvoiceDAO {
 
     public boolean markInvoiceAsUnpaid(int id) {
         String sql = "UPDATE shop_invoice SET paid = FALSE WHERE id = ?";
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
@@ -232,7 +232,7 @@ public class ShopInvoiceDAO {
 
     public boolean deleteShopInvoice(int id) {
         String sql = "DELETE FROM shop_invoice WHERE id = ?";
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
@@ -247,7 +247,7 @@ public class ShopInvoiceDAO {
 
     public double getTotalRevenueByShop(int shopId) {
         String sql = "SELECT SUM(price) FROM shop_invoice WHERE id_shop = ? AND paid = TRUE";
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, shopId);
@@ -265,7 +265,7 @@ public class ShopInvoiceDAO {
 
     public int getInvoiceCountByShop(int shopId) {
         String sql = "SELECT COUNT(*) FROM shop_invoice WHERE id_shop = ?";
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, shopId);
@@ -285,7 +285,7 @@ public class ShopInvoiceDAO {
         List<Invoice> invoices = new ArrayList<>();
         String sql = "SELECT * FROM shop_invoice WHERE id_shop = ? AND date >= ? AND date <= ?";
 
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, shopId);
@@ -312,7 +312,7 @@ public class ShopInvoiceDAO {
 
     public boolean shopInvoiceExists(int idCopy, int shopId) {
         String sql = "SELECT COUNT(*) FROM shop_invoice WHERE id_copy = ? AND id_shop = ?";
-        try (Connection conn = DbManager.getConnection();
+        try (Connection conn = CDbManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, idCopy);

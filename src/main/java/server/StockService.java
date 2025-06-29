@@ -32,6 +32,10 @@ public class StockService extends UnicastRemoteObject implements IStockService {
     // Map pour stocker les factures en mémoire (pour la démo)
     private Map<Integer, Invoice> invoices = new HashMap<>();
 
+    private Shop shop;
+
+    public Shop getShop() { return shop; }
+
     // Constructeur requis pour UnicastRemoteObject
     public StockService() throws RemoteException {
         super(); // Exportation automatique de l'objet
@@ -263,11 +267,22 @@ public class StockService extends UnicastRemoteObject implements IStockService {
 
     @Override
     public Long saveInvoice(float totalAmount) throws RemoteException {
-        String payment_method = "Card";
-        boolean paid = true;
-        InvoiceDAO dao = new InvoiceDAO();
-        Invoice invoice = new Invoice(totalAmount,payment_method,LocalDateTime.now(),paid);
-        return  dao.addInvoice(invoice);
+        try {
+            String payment_method = "Card";
+            boolean paid = true;
+            InvoiceDAO dao = new InvoiceDAO();
+            Invoice invoice = new Invoice(totalAmount,payment_method,LocalDateTime.now(),paid);
+
+            // Products get - create and update
+            Registry registry = LocateRegistry.getRegistry("localhost", 1098);
+            IShopService shopService = (IShopService) registry.lookup("ShopService");
+            long returnDao = dao.addInvoice(invoice);
+            invoice.setId((int)returnDao);
+            shopService.insertInvoice(this.shop, invoice);
+            return returnDao;
+        } catch (RemoteException | NotBoundException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
@@ -286,6 +301,7 @@ public class StockService extends UnicastRemoteObject implements IStockService {
     @Override
     public void updateDataBaseFromMain(Shop shop) {
         try {
+            this.shop = shop;
             // Shop - create and update
             ShopDAO shopDAO = new ShopDAO();
             if (shopDAO.shopExists(shop.getShopName()))

@@ -3,6 +3,7 @@ package server.main;
 import common.IShopService;
 import common.dao.mainshop.ShopDAO;
 import common.dao.mainshop.CProductDAO;
+import common.dao.mainshop.ShopInvoiceDAO;
 import common.tables.Invoice;
 import common.tables.InvoiceDetail;
 import common.tables.mainshop.CProduct;
@@ -77,8 +78,12 @@ public class ShopService extends UnicastRemoteObject implements IShopService {
     }
 
     @Override
-    public boolean insertInvoice(Shop shop, Invoice invoice, List<InvoiceDetail> invoiceDetails) {
-        return false;
+    public boolean insertInvoice(Shop shop, Invoice invoice) {
+        try {
+            return new ShopInvoiceDAO().addShopInvoice(invoice.getId(), shop.getId(), invoice) != null;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

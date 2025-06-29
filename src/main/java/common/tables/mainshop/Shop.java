@@ -1,6 +1,10 @@
 package common.tables.mainshop;
 
-public class Shop {
+import java.io.Serializable;
+
+public class Shop implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private int id;
     private String shopName;
 
