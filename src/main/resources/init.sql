@@ -1,5 +1,6 @@
 -- Drop tables if they exist
 DROP TABLE IF EXISTS invoice_product;
+DROP TABLE IF EXISTS invoice_detail;
 DROP TABLE IF EXISTS product;
 DROP TABLE IF EXISTS family;
 DROP TABLE IF EXISTS invoice;
@@ -39,11 +40,6 @@ CREATE TABLE invoice_detail (
     FOREIGN KEY (product_id) REFERENCES product(id),
     FOREIGN KEY (id_invoice) REFERENCES invoice(id)
 );
-
--- Indexes
-CREATE INDEX idx_product_family ON product(id_family);
-CREATE INDEX idx_invoice_product_product ON invoice_product(product_id);
-CREATE INDEX idx_invoice_product_invoice ON invoice_product(id_invoice);
 
 -- Insert family data
 INSERT INTO family (name) VALUES
